@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Controle Uber</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-body">
+                <h2 class="card-title text-center">💰 Controle de Ganhos</h2>
+                <hr>
+                
+                <form th:action="@{/salvar}" th:object="${lancamento}" method="POST">
+                    
+                    <input type="hidden" th:field="*{id}">
+
+                    <div class="mb-3">
+                        <label class="form-label">Descrição (Ex: Corrida, Posto)</label>
+                        <input type="text" th:field="*{descricao}" class="form-control" placeholder="O que foi?" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Valor (R$)</label>
+                        <input type="number" step="0.01" th:field="*{valor}" class="form-control" placeholder="0,00" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Salvar Lançamento</button>
+                </form>
+                <hr>
+                <div class="mt-4">
+                    <h4>Resumo Financeiro</h4>
+                    <div class="alert" th:classappend="${total >= 0} ? 'alert-success' : 'alert-danger'">
+                        <strong>Saldo Total: R$ <span th:text="${#numbers.formatDecimal(total, 1, 2, 'COMMA')}">0,00</span></strong>
+                    </div>
+
+                    <table class="table table-striped mt-3">
+                        <thead>
+                            <tr>
+                                <th>Descrição</th>
+                                <th>Valor (R$)</th>
+                                <th>Data</th>
+                                <th>Ações</th> </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="l : ${lancamentos}">
+                                <td th:text="${l.descricao}"></td>
+                                <td th:text="${l.valor}" th:class="${l.valor < 0} ? 'text-danger' : 'text-success'"></td>
+                                <td th:text="${#temporals.format(l.data, 'dd/MM/yyyy')}"></td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a th:href="@{/editar/{id}(id=${l.id})}" class="btn btn-sm btn-warning">Editar</a>
+                                        <a th:href="@{/excluir/{id}(id=${l.id})}" 
+                                           class="btn btn-sm btn-danger" 
+                                           onclick="return confirm('Apagar este lançamento?')">Excluir</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
